@@ -9,20 +9,22 @@ import scipy.sparse as sp
 
 def load_data(path="./Data", dataset="HMDB51", K=1):
     print('Loading {} dataset...'.format(dataset))
-
-    train_features = np.load(os.path.join(path, '{}_trainset_features.npy'.format(dataset))).T
+    train_features = np.load(os.path.join(path, '{}_trainset_features.npy'.format(dataset))).T # train_features:（1530.768）
+    # train_features is the original feature of the video sample, corresponding to X with dimension N*F in the text
+    # np.load reads and writes to disk arrays. os.path.join() function: Join two or more pathname components. format() replaces {} with JHMDB
+    # 1530 represents the number of nodes, and 768 represents the dimension of the video feature
     train_labels = np.load(os.path.join(path, '{}_trainset_labels.npy'.format(dataset)))
     test_features = np.load(os.path.join(path, '{}_testset_features.npy'.format(dataset))).T
     test_labels = np.load(os.path.join(path, '{}_testset_labels.npy'.format(dataset)))
 
-    state = np.random.get_state() 
+    state = np.random.get_state()
     np.random.shuffle(train_labels)  
     np.random.set_state(state) 
-    np.random.shuffle(train_features)  
+    np.random.shuffle(train_features) 
 
-    train_features = torch.FloatTensor(train_features)  
+    train_features = torch.FloatTensor(train_features) 
     train_labels = torch.LongTensor(train_labels)  
-    train_adj = create_adj(train_features, num=K) 
+    train_adj = create_adj(train_features, num=K)  
     test_features = torch.FloatTensor(test_features)
     test_labels = torch.LongTensor(test_labels)
     test_adj = create_adj(test_features, num=K)
@@ -33,11 +35,12 @@ def load_data(path="./Data", dataset="HMDB51", K=1):
 def create_adj(features, num=1):
     norm = torch.sum(features * features, dim=1).unsqueeze(1) \
            + torch.sum(features * features, dim=1).unsqueeze(0) \
-           - 2 * torch.mm(features, features.T)  
-    _, idxc = torch.topk(norm, k=num + 1, largest=False)
+           - 2 * torch.mm(features, features.T)   
+    _, idxc = torch.topk(norm, k=num + 1, largest=False)  
     idxr = torch.tensor(range(idxc.shape[0])).repeat(idxc.shape[1], 1).T
+    #.repeat(2,2) means that it is copied twice in 0-D and twice in 1-D. If it is a tensor with 2 rows and 3 columns, the shape will become 4 rows and 6 columns with.repeat(2,2).
     adj = torch.zeros((features.shape[0], features.shape[0]))
-    adj[idxr, idxc] = 1  
+    adj[idxr, idxc] = 1 
     adj = adj + adj.T * (adj.T > adj).float() - adj * (adj.T > adj).float()
 #    adj = adj.numpy()
 #    features = features.numpy()
@@ -70,7 +73,7 @@ def train(epoch, model, optimizer, features, labels, edge, args):
     optimizer.zero_grad()
     outputs, x0, A0 = model(features, edge)
     loss = F.nll_loss(outputs[0:args.n,:], labels[0:args.n]) \
-           + compute_loss(x0, A0, args)   
+           + compute_loss(x0, A0, args)   # 对应文中公式3-17
     loss.backward()
     optimizer.step()
     print('Epoch: {:03d} \t Loss.train: {:.5f} \t Time: {:.5f}s' \
@@ -90,7 +93,7 @@ def validate(model, features, labels, edge):
 #     """Row-normalize sparse matrix"""
 #     rowsum = np.array(D.sum(1))  
 #     r_inv = np.power(rowsum, -0.5).flatten()  
-#     r_inv[np.isinf(r_inv)] = 0.  
+#     r_inv[np.isinf(r_inv)] = 0.   
 #     r_mat_inv = sp.diags(r_inv)   
 #     D = r_mat_inv.A
 #     return D
