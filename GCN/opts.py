@@ -1,13 +1,3 @@
-0# -*- coding:utf-8 -*-
-"""
-# @Author   : Chen
-# @Contact  :
-# @Time     : 2022/2/16
-# @Project  : GCNProject
-# @File     : opts.py
-# @Software : PyCharm
-"""
-
 import argparse
 
 # Training settings
