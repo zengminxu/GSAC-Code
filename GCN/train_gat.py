@@ -1,13 +1,5 @@
 # -*- coding:utf-8 -*-
 """
-# @Author   : Chen
-# @Contact  :
-# @Time     : 2022/2/16
-# @Project  : GCNProject
-# @File     : train_gat.py
-# @Software : PyCharm
-"""
-
 from __future__ import division
 from __future__ import print_function
 
