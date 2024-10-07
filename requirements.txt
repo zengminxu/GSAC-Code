@@ -1,6 +1,6 @@
 torch
 torchvision
-h5py
 numpy
 tensorboard
 scipy
+# h5py
