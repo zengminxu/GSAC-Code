@@ -1,13 +1,3 @@
-# -*- coding:utf-8 -*-
-"""
-# @Author   : Chen
-# @Contact  :
-# @Time     : 2022/2/16
-# @Project  : GCNProject
-# @File     : utils.py
-# @Software : PyCharm
-"""
-
 import os
 import numpy as np
 import torch
